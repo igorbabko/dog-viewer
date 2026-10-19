@@ -32,6 +32,7 @@ describe('MainImage', () => {
     )
     expect(screen.getByTestId('main-image')).toHaveAttribute('src', dog.url)
     expect(screen.getByTestId('main-image')).toHaveAttribute('decoding', 'async')
+    expect(screen.getByTestId('main-image')).toHaveClass('object-contain')
     expect(screen.getByTestId('main-breed')).toHaveTextContent('Pug')
 
     const button = screen.getByRole('button', { name: /favorite/i })

@@ -42,7 +42,7 @@ export function MainImage({
         alt={`${dog.breed} dog`}
         fetchPriority="high"
         decoding="async"
-        className="h-96 w-full object-cover"
+        className="h-96 w-full bg-gray-100 object-contain"
         data-testid="main-image"
       />
       <div className="flex items-center justify-between gap-4 p-4">

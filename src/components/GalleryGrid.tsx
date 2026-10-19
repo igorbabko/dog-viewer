@@ -33,7 +33,7 @@ export function GalleryGrid({ dogs, selectedUrl, onSelect }: Props) {
                 alt={`${dog.breed} dog thumbnail`}
                 loading="lazy"
                 decoding="async"
-                className="h-28 w-full object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 group-focus-visible:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
+                className="aspect-square w-full object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 group-focus-visible:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
               />
               <span className="block truncate px-2 py-1 text-xs font-medium capitalize text-gray-700">
                 {dog.breed}

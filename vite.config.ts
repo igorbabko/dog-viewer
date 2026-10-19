@@ -11,9 +11,20 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
+      reporter: ['text', 'html', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/main.tsx', 'src/vite-env.d.ts', 'src/test/**'],
+      exclude: [
+        'src/main.tsx',
+        'src/test/**',
+        'src/**/*.test.{ts,tsx}',
+        'src/vite-env.d.ts',
+      ],
+      thresholds: {
+        statements: 85,
+        branches: 80,
+        functions: 85,
+        lines: 85,
+      },
     },
   },
 })

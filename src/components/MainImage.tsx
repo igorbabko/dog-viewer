@@ -1,44 +1,74 @@
-import type { DogImage } from '../api/dogs'
+import type { DogImage } from '../domain/dog'
 
 interface Props {
   dog: DogImage | null
   loading: boolean
+  busy: boolean
   isFavorite: boolean
-  onAddFavorite: (dog: DogImage) => void
+  onToggleFavorite: (dog: DogImage) => void
 }
 
-export function MainImage({ dog, loading, isFavorite, onAddFavorite }: Props) {
+export function MainImage({
+  dog,
+  loading,
+  busy,
+  isFavorite,
+  onToggleFavorite,
+}: Props) {
   if (loading) {
     return (
       <div
+        role="status"
         data-testid="main-loading"
-        className="flex h-96 items-center justify-center rounded-xl bg-gray-100 animate-pulse"
+        className="flex h-96 items-center justify-center rounded-xl bg-gray-100"
       >
-        <span className="text-gray-500">Loading…</span>
+        <span className="sr-only">Loading dog…</span>
+        <span
+          aria-hidden="true"
+          className="h-10 w-40 rounded bg-gray-200 motion-safe:animate-pulse"
+        />
       </div>
     )
   }
   if (!dog) return null
   return (
-    <section aria-label="Main dog image" className="overflow-hidden rounded-xl border bg-white shadow-sm">
+    <section
+      aria-label="Main dog image"
+      aria-busy={busy}
+      className="overflow-hidden rounded-xl border bg-white shadow-sm"
+    >
       <img
         src={dog.url}
         alt={`${dog.breed} dog`}
+        fetchPriority="high"
+        decoding="async"
         className="h-96 w-full object-cover"
         data-testid="main-image"
       />
       <div className="flex items-center justify-between gap-4 p-4">
-        <p className="text-xl font-semibold capitalize" data-testid="main-breed">
+        <p
+          aria-live="polite"
+          aria-atomic="true"
+          className="text-xl font-semibold capitalize"
+          data-testid="main-breed"
+        >
           {dog.breed}
         </p>
         <button
           type="button"
-          onClick={() => onAddFavorite(dog)}
-          disabled={isFavorite}
-          aria-label={isFavorite ? 'Already in favorites' : 'Add to favorites'}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          onClick={() => onToggleFavorite(dog)}
+          aria-pressed={isFavorite}
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
-          {isFavorite ? 'Favorited ♥' : 'Favorite ♡'}
+          {isFavorite ? (
+            <>
+              Favorited <span aria-hidden="true">♥</span>
+            </>
+          ) : (
+            <>
+              Favorite <span aria-hidden="true">♡</span>
+            </>
+          )}
         </button>
       </div>
     </section>

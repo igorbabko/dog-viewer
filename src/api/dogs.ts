@@ -1,45 +1,66 @@
-export interface DogImage {
-  url: string
-  breed: string
-}
+import { toDogImage, type DogImage } from '../domain/dog'
 
 const API_BASE = 'https://dog.ceo/api'
+const MAX_DOGS = 50
+const REQUEST_TIMEOUT_MS = 10_000
 
-/** Parse breed from a Dog API image URL, e.g. .../breeds/hound-afghan/n020...jpg -> "Afghan Hound". */
-export function parseBreed(imageUrl: string): string {
+interface DogApiResponse {
+  message: string | string[]
+  status: string
+}
+
+function isDogApiResponse(value: unknown): value is DogApiResponse {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as { message?: unknown; status?: unknown }
+  return (
+    typeof candidate.status === 'string' &&
+    (typeof candidate.message === 'string' || Array.isArray(candidate.message))
+  )
+}
+
+async function fetchJson(url: string, userSignal?: AbortSignal): Promise<DogApiResponse> {
+  const controller = new AbortController()
+  const abort = () => controller.abort(userSignal?.reason)
+
+  if (userSignal?.aborted) abort()
+  else userSignal?.addEventListener('abort', abort, { once: true })
+
+  const timeout = setTimeout(() => {
+    controller.abort(new DOMException('The request timed out.', 'TimeoutError'))
+  }, REQUEST_TIMEOUT_MS)
+
   try {
-    const match = imageUrl.match(/\/breeds\/([^/]+)\//)
-    if (!match) return 'Unknown breed'
-    const raw = match[1] // e.g. "hound-afghan"
-    const parts = raw.split('-')
-    // Dog API format is <breed>-<subbreed>; display sub-breed first.
-    const words = parts.length > 1 ? [...parts.slice(1), parts[0]] : parts
-    return words
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ')
-  } catch {
-    return 'Unknown breed'
+    const res = await fetch(url, { signal: controller.signal })
+    if (!res.ok) throw new Error(`The Dog API responded with ${res.status}.`)
+    const data: unknown = await res.json()
+    if (!isDogApiResponse(data) || data.status !== 'success') {
+      throw new Error('The Dog API returned an unexpected response.')
+    }
+    return data
+  } finally {
+    clearTimeout(timeout)
+    userSignal?.removeEventListener('abort', abort)
   }
 }
 
-export function toDogImage(url: string): DogImage {
-  return { url, breed: parseBreed(url) }
-}
+export async function fetchRandomDogs(
+  count = 10,
+  options: { signal?: AbortSignal } = {},
+): Promise<DogImage[]> {
+  if (!Number.isInteger(count) || count < 1 || count > MAX_DOGS) {
+    throw new Error(`count must be an integer between 1 and ${MAX_DOGS}.`)
+  }
 
-async function fetchJson(url: string): Promise<{ message: string | string[]; status: string }> {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Request failed: ${res.status}`)
-  const data = await res.json()
-  if (data.status !== 'success') throw new Error('Dog API returned an error')
-  return data
-}
+  const data = await fetchJson(
+    `${API_BASE}/breeds/image/random/${count}`,
+    options.signal,
+  )
 
-export async function fetchRandomDog(): Promise<DogImage> {
-  const data = await fetchJson(`${API_BASE}/breeds/image/random`)
-  return toDogImage(data.message as string)
-}
+  if (!Array.isArray(data.message)) {
+    throw new Error('The Dog API returned an unexpected response.')
+  }
 
-export async function fetchRandomDogs(count = 10): Promise<DogImage[]> {
-  const data = await fetchJson(`${API_BASE}/breeds/image/random/${count}`)
-  return (data.message as string[]).map(toDogImage)
+  return data.message
+    .filter((url): url is string => typeof url === 'string')
+    .map(toDogImage)
 }

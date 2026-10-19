@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/igorbabko/dog-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/igorbabko/dog-viewer/actions/workflows/ci.yml)
 
+**Live demo:** https://igorbabko.github.io/dog-viewer/
+
 A tiny single-page app that browses random dog images from the
 [Dog API](https://dog.ceo/dog-api/documentation) and keeps a persistent
 favorites list. React + TypeScript + Vite + Tailwind CSS v4.

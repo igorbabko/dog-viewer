@@ -69,4 +69,8 @@ describe('isDogImage / isStoredDogImage', () => {
     expect(isDogImage(dog)).toBe(true)
     expect(isStoredDogImage(dog)).toBe(false)
   })
+
+  it('rejects a stored image with an unparseable URL', () => {
+    expect(isStoredDogImage({ url: 'not a url', breed: 'Pug' })).toBe(false)
+  })
 })

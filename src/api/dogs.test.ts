@@ -70,6 +70,16 @@ describe('fetchRandomDogs', () => {
     )
   })
 
+  it('rejects a single-image response from the plural endpoint', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse({ message: url, status: 'success' })),
+    )
+    await expect(fetchRandomDogs()).rejects.toThrow(
+      'The Dog API returned an unexpected response.',
+    )
+  })
+
   it.each([0, 51, 1.5])('rejects an invalid count (%s)', async (count) => {
     await expect(fetchRandomDogs(count)).rejects.toThrow(
       'count must be an integer between 1 and 50.',

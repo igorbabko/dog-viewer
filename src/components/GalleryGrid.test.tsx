@@ -36,4 +36,13 @@ describe('GalleryGrid', () => {
     )
     expect(container).toBeEmptyDOMElement()
   })
+
+  it('uses a singular heading for a single dog', () => {
+    render(
+      <GalleryGrid dogs={[dogs[0]!]} selectedUrl={null} onSelect={() => {}} />,
+    )
+    expect(
+      screen.getByRole('heading', { name: '1 random dog' }),
+    ).toBeInTheDocument()
+  })
 })

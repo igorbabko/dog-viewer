@@ -24,8 +24,8 @@ npm run build     # typecheck + production build -> dist/
 npm run preview   # preview the build
 npm run lint      # oxlint, warnings are errors
 npm run typecheck # tsc -b, strict
-npm test          # Vitest + React Testing Library (57 tests)
-npm run coverage  # v8 coverage with thresholds (~97% statements, ~88% branches)
+npm test          # Vitest + React Testing Library (66 tests)
+npm run coverage  # v8 coverage with thresholds (~97% statements, ~94% branches)
 ```
 
 Requires Node 22+ (see `.nvmrc`) and internet access (Dog API).

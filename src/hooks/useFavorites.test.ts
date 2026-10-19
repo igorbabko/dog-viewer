@@ -65,6 +65,22 @@ describe('useFavorites', () => {
     expect(result.current.favorites).toEqual([dog])
   })
 
+  it('does not update state when storage matches current favorites', () => {
+    localStorage.setItem(KEY, JSON.stringify([dog]))
+    const { result } = renderHook(() => useFavorites())
+
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', {
+          key: KEY,
+          newValue: localStorage.getItem(KEY),
+        }),
+      )
+    })
+
+    expect(result.current.favorites).toEqual([dog])
+  })
+
   it('keeps working when storage writes fail', () => {
     const spy = vi
       .spyOn(Storage.prototype, 'setItem')

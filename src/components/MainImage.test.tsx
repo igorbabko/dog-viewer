@@ -70,4 +70,17 @@ describe('MainImage', () => {
       'true',
     )
   })
+
+  it('renders nothing without a dog and without loading', () => {
+    const { container } = render(
+      <MainImage
+        dog={null}
+        loading={false}
+        busy={false}
+        isFavorite={false}
+        onToggleFavorite={() => {}}
+      />,
+    )
+    expect(container).toBeEmptyDOMElement()
+  })
 })
